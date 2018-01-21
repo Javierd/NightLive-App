@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LightCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:id="@+id/placeCardView">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="24dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:id="@+id/imageView"
+            android:src="@drawable/place_image_loading"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:transitionName="sharedPlaceImage"/>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:id="@+id/imageProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="visible"
+            android:layout_margin="0dp"
+            android:padding="0dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:id="@+id/nameTextView"
+            android:textAppearance="?android:attr/textAppearanceLargeInverse"
+            android:text="NAME"
+            android:gravity="center_vertical"
+            android:textStyle="normal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal">
+
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_marginEnd="16dp"
+                android:id="@+id/ratingBar"
+                android:numStars="5"
+                android:rating="3.7"
+
+                android:progressBackgroundTint="@color/ratingBarBGColor"
+                android:progressBackgroundTintMode="multiply" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ratingTextView"
+                android:gravity="center_vertical|start"
+                android:layout_gravity="center_vertical|start"
+                android:text="3.7 (51)"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:id="@+id/descTextView"
+            android:gravity="center_vertical|start"
+            android:layout_gravity="center_vertical|start"
+            android:text="Aprox: 20-50 personas \nEstilos: Pop, rock, rap\Precio: $$"
+            android:textAppearance="?android:attr/textAppearanceMediumInverse"/>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

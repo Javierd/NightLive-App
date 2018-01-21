@@ -1,0 +1,76 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/tools"
+    style="@style/LightCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/flyerCardView">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:id="@+id/imageView"
+                android:src="@drawable/place_image_loading"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/nameTextView"
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:layout_margin="@dimen/flyer_card_margin"
+                android:layout_alignStart="@+id/imageView"
+                android:layout_alignTop="@+id/imageView"
+                android:layout_alignEnd="@+id/imageView"
+                android:layout_alignBottom="@+id/imageView"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/flyer_card_margin"
+                android:paddingBottom="@dimen/flyer_card_margin_small"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/datesTextView"
+                    android:layout_marginEnd="@dimen/flyer_card_margin"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/priceTextView" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <net.cachapa.expandablelayout.ExpandableLayout
+            android:id="@+id/expandableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:el_duration="1000"
+            app:el_expanded="false"
+            app:el_parallax="0.5">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_margin="@dimen/flyer_card_margin"
+                android:id="@+id/infoTextView"
+                android:textColor="#000000"
+                android:text="Flyer info" />
+
+        </net.cachapa.expandablelayout.ExpandableLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

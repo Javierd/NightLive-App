@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.javierd.nightlive.LoginActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/logoImageView"
+        android:layout_marginTop="@dimen/logo_vertical_margin"
+        android:layout_marginBottom="@dimen/logo_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:src="@drawable/app_name2"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/view_user_mail"
+            android:visibility="visible"/>
+
+        <include layout="@layout/view_user_password"
+            android:visibility="invisible"/>
+
+        <include layout="@layout/view_user_pass_name"
+            android:visibility="invisible"/>
+
+        <include layout="@layout/view_user_info"
+            android:visibility="invisible"/>
+
+    </RelativeLayout>
+</LinearLayout>

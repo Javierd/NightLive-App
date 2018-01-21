@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#303030</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimaryDarkBlack">#212121</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="mapCircleStroke">#0D47A1</color>
+    <color name="mapCircleFill">#202196F3</color>
+
+    <color name="gridBackgroundColor">#212121</color>
+    <color name="gridBackgroundFooter">#90000000</color>
+    <color name="gridBackgroundFooterClear">#1A000000</color>
+
+    <color name="ratingBarColor">#FFEB3B</color>
+    <color name="ratingBarBGColor">#EEEEEE</color>
+
+</resources>

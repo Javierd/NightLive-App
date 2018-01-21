@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/layout_user_info">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="12dp"
+        android:id="@+id/infoRelativeLayout"
+        android:layout_alignParentTop="true">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/float_label_birthdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/sexSpinner"
+            android:layout_alignParentStart="true">
+
+            <EditText
+                android:id="@+id/birthDateEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:hint="@string/user_birthdate"
+                android:focusable="false"
+                android:maxLength="36"
+                android:maxLines="1" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="64dp"
+            android:id="@+id/sexSpinner"
+            android:gravity="center_vertical|end"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="false"
+            android:layout_centerVertical="true">
+
+        </Spinner>
+
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/stylesGridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/infoRelativeLayout"
+        android:verticalSpacing="@dimen/grid_margin"
+        android:horizontalSpacing="@dimen/grid_margin"
+        android:numColumns="auto_fit"
+        android:padding="@dimen/grid_margin" />
+
+</RelativeLayout>

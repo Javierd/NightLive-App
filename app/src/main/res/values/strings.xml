@@ -1,0 +1,91 @@
+<resources>
+    <string name="app_name">NightLive</string>
+
+    <string name="sign_up">Sign up</string>
+    <string name="sign_in">Sign in</string>
+    <string name="user_name">User name</string>
+    <string name="user_password">Password</string>
+    <string name="user_mail">E-mail</string>
+    <string name="user_birthdate">Birthdate</string>
+    <string name="user_fill_all_fields">All fields must be filled!</string>
+    <string-array name="sex_options">
+        <item>Man</item>
+        <item>Woman</item>
+        <item>Other</item>
+    </string-array>
+
+    <string name="notification_channel_info">Information</string>
+
+    <!--Errors / logs from the server-->
+    <string name="no_internet">No internet connection available</string>
+    <string name="error_receiving_map">Error receiving map</string>
+    <string name="location_not_found">Location not found</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="permission_denied">Permission denied. The app won\'t work correctly</string>
+    <string name="unexpected_error">Unexpected error. Try again later.</string>
+    <string name="wrong_server_direction">Wrong server direction</string>
+    <string name="wrong_username">Wrong user name</string>
+    <string name="wrong_password">Wrong password</string>
+    <string name="wrong_email">Email address not valid</string>
+    <string name="wrong_birthdate">Birthdate not valid</string>
+    <string name="used_username">Used user name</string>
+    <string name="used_email">Used email</string>
+    <string name="signed_in">Signed in</string>
+    <string name="signed_up">Signed up correctly</string>
+    <string name="signing_in">Signing in</string>
+    <string name="signing_up">Signing up</string>
+
+    <!--Music styles-->
+    <string-array name="styles_names">
+        <item>Pop</item>
+        <item>Rock</item>
+        <item>Punk</item>
+        <item>Folk</item>
+        <item>Metal</item>
+        <item>Country</item>
+        <item>Electronic</item>
+        <item>Techno</item>
+        <item>House</item>
+        <item>Reggae</item>
+        <item>Reggaeton</item>
+        <item>Rap</item>
+        <item>Trap</item>
+        <item>Jazz</item>
+        <item>Blues</item>
+        <item>Flamenco</item>
+    </string-array>
+
+    <string-array name="styles_images">
+        <item>@drawable/app_name</item>
+        <item>@drawable/app_name2</item>
+        <item>@drawable/app_name</item>
+        <item>@drawable/app_name2</item>
+        <item>@drawable/app_name</item>
+        <item>@drawable/app_name2</item>
+        <item>@drawable/app_name</item>
+        <item>@drawable/app_name2</item>
+        <item>@drawable/app_name</item>
+        <item>@drawable/app_name2</item>
+        <item>@drawable/app_name</item>
+        <item>@drawable/app_name2</item>
+        <item>@drawable/app_name</item>
+        <item>@drawable/app_name2</item>
+        <item>@drawable/app_name</item>
+        <item>@drawable/app_name2</item>
+    </string-array>
+
+    <!-- Google example TODO, remove them-->
+    <string name="launch_activity">Launch activity</string>
+    <string name="location_unknown">Location unknown</string>
+    <string name="location_updates_label">Location Updates</string>
+
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+        functionality.</string>
+    <string name="settings">Settings</string>
+    <string name="ok">OK</string>
+
+    <string name="location_updated">Location Updated: %1$s</string>
+    <string name="request_location_updates">Request location updates</string>
+    <string name="remove_location_updates">Remove location updates</string>
+</resources>
