@@ -85,7 +85,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity  implements
-        SharedPreferences.OnSharedPreferenceChangeListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         OnMapReadyCallback {
@@ -110,8 +109,6 @@ public class MainActivity extends AppCompatActivity  implements
     List<CircleOptions> circleOptionsList = null;
 
     // UI elements.
-    private Button mRequestLocationUpdatesButton;
-    private Button mRemoveLocationUpdatesButton;
     private RecyclerView placeRecycler;
     private RecyclerView.Adapter placeAdapter;
     private RecyclerView.LayoutManager placeLManager;
@@ -123,6 +120,12 @@ public class MainActivity extends AppCompatActivity  implements
         public void onServiceConnected(ComponentName name, IBinder service) {
             LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) service;
             mService = binder.getService();
+
+            if (!checkPermissions()) {
+                requestPermissions();
+            } else {
+                mService.requestLocationUpdates();
+            }
             mBound = true;
         }
 
@@ -496,33 +499,6 @@ public class MainActivity extends AppCompatActivity  implements
         super.onStart();
         mGoogleApiClient.connect();
 
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(this);
-
-        mRequestLocationUpdatesButton = (Button) findViewById(R.id.request_location_updates_button);
-        mRemoveLocationUpdatesButton = (Button) findViewById(R.id.remove_location_updates_button);
-
-        mRequestLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!checkPermissions()) {
-                    requestPermissions();
-                } else {
-                    mService.requestLocationUpdates();
-                }
-            }
-        });
-
-        mRemoveLocationUpdatesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mService.removeLocationUpdates();
-            }
-        });
-
-        // Restore the state of the buttons when the activity (re)launches.
-        setButtonsState(Utils.requestingLocationUpdates(this));
-
         // Bind to the service. If the service is in foreground mode, this signals to the service
         // that since this activity is in the foreground, the service can exit foreground mode.
         bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
@@ -553,8 +529,7 @@ public class MainActivity extends AppCompatActivity  implements
             unbindService(mServiceConnection);
             mBound = false;
         }
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .unregisterOnSharedPreferenceChangeListener(this);
+
         super.onStop();
     }
 
@@ -618,7 +593,6 @@ public class MainActivity extends AppCompatActivity  implements
                 Toast.makeText(this, getString(R.string.permission_granted), Toast.LENGTH_LONG).show();
             } else {
                 // Permission denied.
-                setButtonsState(false);
                 Snackbar.make(
                         findViewById(R.id.activity_main),
                         R.string.permission_denied_explanation,
@@ -691,25 +665,6 @@ public class MainActivity extends AppCompatActivity  implements
         /*googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(40.3839, -100.9565), 2));*/
 
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        // Update the buttons state depending on whether location updates are being requested.
-        if (s.equals(Utils.KEY_REQUESTING_LOCATION_UPDATES)) {
-            setButtonsState(sharedPreferences.getBoolean(Utils.KEY_REQUESTING_LOCATION_UPDATES,
-                    false));
-        }
-    }
-
-    private void setButtonsState(boolean requestingLocationUpdates) {
-        if (requestingLocationUpdates) {
-            mRequestLocationUpdatesButton.setEnabled(false);
-            mRemoveLocationUpdatesButton.setEnabled(true);
-        } else {
-            mRequestLocationUpdatesButton.setEnabled(true);
-            mRemoveLocationUpdatesButton.setEnabled(false);
-        }
     }
 
     /*Google API methods*/

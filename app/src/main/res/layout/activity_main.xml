@@ -8,18 +8,6 @@
     android:orientation="vertical"
     tools:context="com.javierd.nightlive.MainActivity">
 
-    <Button
-        android:id="@+id/request_location_updates_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/request_location_updates" />
-
-    <Button
-        android:id="@+id/remove_location_updates_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/remove_location_updates" />
-
     <FrameLayout
         android:id="@+id/map_container"
         android:name="com.google.android.gms.maps.SupportMapFragment"
