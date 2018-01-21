@@ -290,7 +290,6 @@ public class LocationUpdatesService extends Service{
                     .setContentText(text)
                     .setContentTitle(Utils.getLocationTitle(this))
                     .setOngoing(true)
-                    .setPriority(Notification.PRIORITY_LOW)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setTicker(text)
                     .setWhen(System.currentTimeMillis());
@@ -306,7 +305,7 @@ public class LocationUpdatesService extends Service{
                     .setContentText(text)
                     .setContentTitle(Utils.getLocationTitle(this))
                     .setOngoing(true)
-                    .setPriority(Notification.PRIORITY_LOW)
+                    .setPriority(Notification.PRIORITY_MIN)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setTicker(text)
                     .setWhen(System.currentTimeMillis());
