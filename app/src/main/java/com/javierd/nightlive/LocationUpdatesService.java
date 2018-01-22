@@ -283,8 +283,7 @@ public class LocationUpdatesService extends Service{
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder mBuilder = new Notification.Builder(this, CHANNEL_ID)
-                    .addAction(R.mipmap.ic_launcher, getString(R.string.launch_activity),
-                    activityPendingIntent)
+                    .setContentIntent(activityPendingIntent)
                     .addAction(R.mipmap.ic_launcher, getString(R.string.remove_location_updates),
                             servicePendingIntent)
                     .setContentText(text)
@@ -298,8 +297,7 @@ public class LocationUpdatesService extends Service{
 
         }else{
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                    .addAction(R.mipmap.ic_launcher, getString(R.string.launch_activity),
-                            activityPendingIntent)
+                    .setContentIntent(activityPendingIntent)
                     .addAction(R.mipmap.ic_launcher, getString(R.string.remove_location_updates),
                             servicePendingIntent)
                     .setContentText(text)
