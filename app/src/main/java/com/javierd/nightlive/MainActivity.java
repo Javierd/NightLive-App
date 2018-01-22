@@ -101,17 +101,13 @@ public class MainActivity extends AppCompatActivity  implements
     private boolean mapCentered = false;
 
     private GoogleApiClient mGoogleApiClient;
-    private SupportMapFragment mMapFragment;
     private GoogleMap mapLoaded;
 
     List<Point> pointList = null;
     List<Circle> circleList = null;
     List<CircleOptions> circleOptionsList = null;
 
-    // UI elements.
-    private RecyclerView placeRecycler;
     private RecyclerView.Adapter placeAdapter;
-    private RecyclerView.LayoutManager placeLManager;
 
     // Monitors the state of the connection to the service.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -196,7 +192,7 @@ public class MainActivity extends AppCompatActivity  implements
         /*TODO*/
 
         //Load the map
-        mMapFragment = SupportMapFragment.newInstance();
+        SupportMapFragment mMapFragment = SupportMapFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.map_container, mMapFragment)
@@ -381,8 +377,8 @@ public class MainActivity extends AppCompatActivity  implements
         List<Place> placesList =  point.getPlaces();
         final List<GMapPlace> gMapsPlacesList = new ArrayList<GMapPlace>();
 
-        placeRecycler = (RecyclerView) sheetView.findViewById(R.id.placeRecyclerView);
-        placeLManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView placeRecycler = (RecyclerView) sheetView.findViewById(R.id.placeRecyclerView);
+        RecyclerView.LayoutManager placeLManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         placeRecycler.setLayoutManager(placeLManager);
 
         placeAdapter = new GMapPlacePreviewAdapter(gMapsPlacesList);
