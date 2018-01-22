@@ -55,9 +55,16 @@ public class LocationUpdatesService extends Service{
 
     private final IBinder mBinder = new LocalBinder();
 
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    //Used when the app is in the foreground
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 30 * 1000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    //Used when the app is in the background
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS_BG = 120 * 1000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS_BG =
+            UPDATE_INTERVAL_IN_MILLISECONDS_BG / 2;
+
     private static final int NOTIFICATION_ID = 12345678;
 
     /**
@@ -89,7 +96,9 @@ public class LocationUpdatesService extends Service{
             }
         };
 
-        createLocationRequest();
+        /*TODO check if the service has been created by the main activity (foreground = true)
+        * or by another service, alarm, etc (foreground = false)*/
+        createLocationRequest(true);
         getLastLocation();
 
         HandlerThread handlerThread = new HandlerThread(TAG);
@@ -137,6 +146,7 @@ public class LocationUpdatesService extends Service{
         // when that happens.
         Log.i(TAG, "in onBind()");
         stopForeground(true);
+        changeLocationRequest(true);
         mChangingConfiguration = false;
         return mBinder;
     }
@@ -148,6 +158,7 @@ public class LocationUpdatesService extends Service{
         // service when that happens.
         Log.i(TAG, "in onRebind()");
         stopForeground(true);
+        changeLocationRequest(true);
         mChangingConfiguration = false;
         super.onRebind(intent);
     }
@@ -162,6 +173,7 @@ public class LocationUpdatesService extends Service{
         if (!mChangingConfiguration && Utils.requestingLocationUpdates(this)) {
             Log.i(TAG, "Starting foreground service");
 
+            changeLocationRequest(false);
             startForeground(NOTIFICATION_ID, getNotification());
         }
         return true; // Ensures onRebind() is called when a client re-binds.
@@ -171,6 +183,18 @@ public class LocationUpdatesService extends Service{
     public void onDestroy() {
         Utils.setRequestingLocationUpdates(this, false);
         mServiceHandler.removeCallbacksAndMessages(null);
+    }
+
+    /**
+     * Update the location request when the service goes from background
+     * to foreground and vice-versa
+     * @param foreground The {@link Boolean} true if the activity is
+     *                   going to be in foreground, false if not
+     * */
+    public void changeLocationRequest(boolean foreground){
+        removeLocationUpdates();
+        createLocationRequest(foreground);
+        removeLocationUpdates();
     }
 
     /**
@@ -297,7 +321,6 @@ public class LocationUpdatesService extends Service{
 
         }else{
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                    .setContentIntent(activityPendingIntent)
                     .addAction(R.mipmap.ic_launcher, getString(R.string.remove_location_updates),
                             servicePendingIntent)
                     .setContentText(text)
@@ -351,11 +374,21 @@ public class LocationUpdatesService extends Service{
 
     /**
      * Sets the location request parameters.
-     */
-    private void createLocationRequest() {
+     * @param foreground The {@link Boolean} true if the activity is
+     *                   going to be in foreground, false if not
+     * */
+    private void createLocationRequest(boolean foreground) {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        if(foreground){
+            Log.i(TAG, "Foreground location request");
+            mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+            mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        }else{
+            Log.i(TAG, "Background location request");
+            mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS_BG);
+            mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS_BG);
+        }
+
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
