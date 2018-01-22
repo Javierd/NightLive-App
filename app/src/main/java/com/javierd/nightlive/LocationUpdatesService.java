@@ -111,7 +111,7 @@ public class LocationUpdatesService extends Service{
             CharSequence name = getString(R.string.app_name);
             // Create the channel for the notification
             NotificationChannel mChannel =
-                    new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_MIN);
+                    new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
 
             mChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
             mNotificationManager.createNotificationChannel(mChannel);
@@ -173,8 +173,8 @@ public class LocationUpdatesService extends Service{
         if (!mChangingConfiguration && Utils.requestingLocationUpdates(this)) {
             Log.i(TAG, "Starting foreground service");
 
-            changeLocationRequest(false);
             startForeground(NOTIFICATION_ID, getNotification());
+            //changeLocationRequest(false);
         }
         return true; // Ensures onRebind() is called when a client re-binds.
     }
@@ -192,9 +192,27 @@ public class LocationUpdatesService extends Service{
      *                   going to be in foreground, false if not
      * */
     public void changeLocationRequest(boolean foreground){
-        removeLocationUpdates();
+        // Remove the location updates
+        try {
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+            Utils.setRequestingLocationUpdates(this, false);
+        } catch (SecurityException unlikely) {
+            Utils.setRequestingLocationUpdates(this, true);
+            Log.e(TAG, "Lost location permission. Could not remove updates. " + unlikely);
+        }
+
+        // Change the locationRequest
         createLocationRequest(foreground);
-        removeLocationUpdates();
+
+        //Request location updates again
+        try {
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                    mLocationCallback, Looper.myLooper());
+            Utils.setRequestingLocationUpdates(this, true);
+        } catch (SecurityException unlikely) {
+            Utils.setRequestingLocationUpdates(this, false);
+            Log.e(TAG, "Lost location permission. Could not request updates. " + unlikely);
+        }
     }
 
     /**
