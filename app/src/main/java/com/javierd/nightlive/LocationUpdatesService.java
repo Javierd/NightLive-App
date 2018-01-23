@@ -331,7 +331,7 @@ public class LocationUpdatesService extends Service{
                     .setContentText(text)
                     .setContentTitle(Utils.getLocationTitle(this))
                     .setOngoing(true)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.notification_icon)
                     .setTicker(text)
                     .setWhen(System.currentTimeMillis());
 
@@ -345,7 +345,7 @@ public class LocationUpdatesService extends Service{
                     .setContentTitle(Utils.getLocationTitle(this))
                     .setOngoing(true)
                     .setPriority(Notification.PRIORITY_MIN)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.notification_icon)
                     .setTicker(text)
                     .setWhen(System.currentTimeMillis());
 
