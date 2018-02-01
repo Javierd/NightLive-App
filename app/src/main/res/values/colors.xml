@@ -15,4 +15,6 @@
     <color name="ratingBarColor">#FFEB3B</color>
     <color name="ratingBarBGColor">#EEEEEE</color>
 
+    <color name="popup_window_map_color">#00BCD4</color>
+
 </resources>

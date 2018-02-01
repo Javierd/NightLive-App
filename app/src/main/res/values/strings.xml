@@ -15,6 +15,8 @@
     </string-array>
 
     <string name="notification_channel_info">Information</string>
+    <string name="search_this_area">Search this area</string>
+
 
     <!--Errors / logs from the server-->
     <string name="no_internet">No internet connection available</string>

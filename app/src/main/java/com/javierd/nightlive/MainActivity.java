@@ -2,15 +2,12 @@ package com.javierd.nightlive;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentSender;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,19 +31,17 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
@@ -54,9 +49,7 @@ import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
@@ -69,6 +62,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.maps.android.SphericalUtil;
+import com.javierd.nightlive.CustomMapFragment.CustomMapFragment;
 import com.javierd.nightlive.GMapPlace.GMapPlace;
 import com.javierd.nightlive.GMapPlace.GMapPlacePreviewAdapter;
 import com.javierd.nightlive.RestUtils.Place;
@@ -87,7 +81,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        OnMapReadyCallback {
+        OnMapReadyCallback{
     private static final String TAG = MainActivity.class.getSimpleName();
 
     // Used in checking for runtime permissions.
@@ -101,7 +95,9 @@ public class MainActivity extends AppCompatActivity  implements
     private boolean mapCentered = false;
 
     private GoogleApiClient mGoogleApiClient;
+    private CustomMapFragment mMapFragment;
     private GoogleMap mapLoaded;
+    private PopupWindow mPopupWindow;
 
     List<Point> pointList = null;
     List<Circle> circleList = null;
@@ -146,7 +142,7 @@ public class MainActivity extends AppCompatActivity  implements
                 LatLng userLoc = new LatLng(location.getLatitude(), location.getLongitude());
 
                 LatLngBounds mapView = toBounds(userLoc, 400); //400m of radius as the viewport can be moved arround
-                mapLoaded.setLatLngBoundsForCameraTarget(mapView);
+                //mapLoaded.setLatLngBoundsForCameraTarget(mapView);
 
 
                 if(!mapCentered){
@@ -192,11 +188,19 @@ public class MainActivity extends AppCompatActivity  implements
         /*TODO*/
 
         //Load the map
-        SupportMapFragment mMapFragment = SupportMapFragment.newInstance();
+        mMapFragment = CustomMapFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.map_container, mMapFragment)
                 .commit();
+
+        mMapFragment.setOnTouchListener(new CustomMapFragment.OnTouchListener() {
+            @Override
+            public void onTouch() {
+                setUpPopupWindow(getResources().getString(R.string.search_this_area));
+            }
+        });
+
         mMapFragment.getMapAsync(this);
     }
 
@@ -243,37 +247,7 @@ public class MainActivity extends AppCompatActivity  implements
                 if(result == null) return;
                 if(mapLoaded == null) return;
 
-                if(pointList != null) pointList.clear();
-
-                pointList = result.getPoints();
-
-                if( circleList == null){
-                    circleList = new ArrayList<Circle>();
-                }else{
-                    for (int i = 0; i < circleList.size(); i++){
-                        if(circleList.get(i) != null){
-                            circleList.get(i).remove();
-                        }
-                    }
-                    circleList.clear();
-                }
-                if( circleOptionsList == null ){
-                    circleOptionsList = new ArrayList<CircleOptions>();
-                }else{
-                    circleOptionsList.clear();
-                }
-
-                for (int i = 0; i < pointList.size(); i++){
-                    Point mPoint = pointList.get(i);
-
-                    CircleOptions mCircleOptions = setMapCircleOptions(mapLoaded,
-                            mPoint.getLatitude(),mPoint.getLongitude(), mPoint.getRadius());
-                    Circle mCircle = mapLoaded.addCircle(mCircleOptions);
-                    mCircle.setClickable(true);
-
-                    circleList.add(mCircle);
-                    circleOptionsList.add(mCircleOptions);
-                }
+                updatePlacesPoints(result.getPoints());
             }
 
             @Override
@@ -283,6 +257,40 @@ public class MainActivity extends AppCompatActivity  implements
                 Toast.makeText(MainActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    protected void updatePlacesPoints(List<Point> points){
+        if(pointList != null) pointList.clear();
+
+        pointList = points;
+
+        if( circleList == null){
+            circleList = new ArrayList<Circle>();
+        }else{
+            for (int i = 0; i < circleList.size(); i++){
+                if(circleList.get(i) != null){
+                    circleList.get(i).remove();
+                }
+            }
+            circleList.clear();
+        }
+        if( circleOptionsList == null ){
+            circleOptionsList = new ArrayList<CircleOptions>();
+        }else{
+            circleOptionsList.clear();
+        }
+
+        for (int i = 0; i < pointList.size(); i++){
+            Point mPoint = pointList.get(i);
+
+            CircleOptions mCircleOptions = setMapCircleOptions(mapLoaded,
+                    mPoint.getLatitude(),mPoint.getLongitude(), mPoint.getRadius());
+            Circle mCircle = mapLoaded.addCircle(mCircleOptions);
+            mCircle.setClickable(true);
+
+            circleList.add(mCircle);
+            circleOptionsList.add(mCircleOptions);
+        }
     }
 
     private void getPlacePhotosTask(String placeId, final GMapPlace place, final int position) {
@@ -425,6 +433,90 @@ public class MainActivity extends AppCompatActivity  implements
 
         mBottomSheetDialog.setContentView(sheetView);
         mBottomSheetDialog.show();
+    }
+
+    protected void setUpPopupWindow(String text){
+
+        // In case it is already created, just update the text if necessary
+        if(mPopupWindow != null){
+            TextView textView = (TextView) mPopupWindow.getContentView().findViewById(R.id.textView);
+            if(text != textView.getText())
+                textView.setText(text);
+            return;
+        }
+
+
+        // Initialize a new instance of LayoutInflater service
+        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        // Inflate the custom layout/view
+        View customView = inflater.inflate(R.layout.popup_window_map,null);
+
+                /*
+                    public PopupWindow (View contentView, int width, int height)
+                        Create a new non focusable popup window which can display the contentView.
+                        The dimension of the window must be passed to this constructor.
+
+                        The popup does not provide any background. This should be handled by
+                        the content view.
+
+                    Parameters
+                        contentView : the popup's content
+                        width : the popup's width
+                        height : the popup's height
+                */
+        // Initialize a new instance of popup window
+
+        //TODO ANIMATE
+        mPopupWindow = new PopupWindow(
+                customView,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        mPopupWindow.setElevation(6.0f);
+        //mPopupWindow.setAnimationStyle(R.style.PopupAnimation);
+
+        // Get a reference for the custom view close button
+        TextView textView = (TextView) customView.findViewById(R.id.textView);
+        textView.setText(text);
+
+        // Set a click listener for the popup window close button
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Dismiss the popup window
+                //TODO ANIMATE
+
+                if(mapLoaded != null){
+                    String userName = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString(LoginActivity.USER_NAME, "None");
+                    String userToken = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString(LoginActivity.USER_TOKEN, "None");
+
+                    LatLng center = mapLoaded.getCameraPosition().target;
+                    getUserLocationPoints(center.latitude, center.longitude, userName, userToken);
+                }
+
+                mPopupWindow.dismiss();
+                mPopupWindow = null;
+            }
+        });
+
+                /*
+                    public void showAtLocation (View parent, int gravity, int x, int y)
+                        Display the content view in a popup window at the specified location. If the
+                        popup window cannot fit on screen, it will be clipped.
+                        Learn WindowManager.LayoutParams for more information on how gravity and the x
+                        and y parameters are related. Specifying a gravity of NO_GRAVITY is similar
+                        to specifying Gravity.LEFT | Gravity.TOP.
+
+                    Parameters
+                        parent : a parent view to get the getWindowToken() token from
+                        gravity : the gravity which controls the placement of the popup window
+                        x : the popup's x location offset
+                        y : the popup's y location offset
+                */
+        // Finally, show the popup window at the center location of root relative layout
+        mPopupWindow.showAtLocation(mMapFragment.getView(), Gravity.BOTTOM,0,180);
     }
 
     /*Map utilities*/
