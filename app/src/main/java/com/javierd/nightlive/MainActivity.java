@@ -86,7 +86,8 @@ public class MainActivity extends AppCompatActivity  implements
 
     // Used in checking for runtime permissions.
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    private MyReceiver myReceiver;
+    private LocationReceiver mLocationReceiver;
+    private ConnectionChangeReceiver mNetworkReceiver;
     private LocationUpdatesService mService = null;
 
     // Tracks the bound state of the service.
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity  implements
     List<CircleOptions> circleOptionsList = null;
 
     private RecyclerView.Adapter placeAdapter;
+    private Snackbar mNetworkSnackbar;
 
     // Monitors the state of the connection to the service.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -131,7 +133,7 @@ public class MainActivity extends AppCompatActivity  implements
     /**
      * Receiver for broadcasts sent by {@link LocationUpdatesService}.
      */
-    private class MyReceiver extends BroadcastReceiver {
+    private class LocationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Location location = intent.getParcelableExtra(LocationUpdatesService.EXTRA_LOCATION);
@@ -156,9 +158,37 @@ public class MainActivity extends AppCompatActivity  implements
 
             if(isOnline()){
                 getUserLocationPoints(location.getLatitude(), location.getLongitude(), userName, userToken);
+            }
+        }
+    }
+
+
+    private class ConnectionChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive( Context context, Intent intent ) {
+            Log.i("NETWORK", "Received");
+
+            ConnectivityManager cm =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            assert cm != null;
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+            if( activeNetwork != null && activeNetwork.isConnected()){
+                Log.i("NETWORK", "Connected");
+                if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
+                    mNetworkSnackbar.dismiss();
+                }
             }else{
-                //TODO Change with some kind of persistent advice on the app
-                Toast.makeText(MainActivity.this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
+               //TODO Look for better options
+                if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
+                    mNetworkSnackbar.dismiss();
+                }
+
+                mNetworkSnackbar = Snackbar.make(findViewById(R.id.map_container),
+                        R.string.no_internet, Snackbar.LENGTH_INDEFINITE);
+                mNetworkSnackbar.show();
+                Log.i("NETWORK", "Disconnected");
             }
         }
     }
@@ -167,7 +197,9 @@ public class MainActivity extends AppCompatActivity  implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        myReceiver = new MyReceiver();
+
+        mLocationReceiver = new LocationReceiver();
+        mNetworkReceiver = new ConnectionChangeReceiver();
 
         boolean signedInUser = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean(LoginActivity.SIGNED_IN_USER, false);
         if(!signedInUser){
@@ -267,13 +299,9 @@ public class MainActivity extends AppCompatActivity  implements
         if( circleList == null){
             circleList = new ArrayList<Circle>();
         }else{
-            for (int i = 0; i < circleList.size(); i++){
-                if(circleList.get(i) != null){
-                    circleList.get(i).remove();
-                }
-            }
             circleList.clear();
         }
+
         if( circleOptionsList == null ){
             circleOptionsList = new ArrayList<CircleOptions>();
         }else{
@@ -581,6 +609,8 @@ public class MainActivity extends AppCompatActivity  implements
     }
 
 
+
+
     /*App lifecycle*/
     @Override
     protected void onStart() {
@@ -596,13 +626,22 @@ public class MainActivity extends AppCompatActivity  implements
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
+        // LocationReceiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLocationReceiver,
                 new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
+
+        //NetworkReceiver
+        // In this case we cannot use a LocalBroadcastManager because the broadcast is not send from our app.
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        MainActivity.this.registerReceiver(mNetworkReceiver , filter);
     }
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocationReceiver);
+
+        MainActivity.this.unregisterReceiver(mNetworkReceiver);
+
         super.onPause();
     }
 
