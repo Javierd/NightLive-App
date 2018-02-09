@@ -377,7 +377,9 @@ public class LocationUpdatesService extends Service{
         mLocation = location;
 
         //Upload the location to our servers
-        postLocation(location, 0);
+        if(Utils.isOnline(getApplicationContext())){
+            postLocation(location, 0);
+        }
 
         // Notify anyone listening for broadcasts about the new location.
         Intent intent = new Intent(ACTION_BROADCAST);

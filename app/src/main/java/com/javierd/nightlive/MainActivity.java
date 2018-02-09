@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity  implements
             String userName = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString(LoginActivity.USER_NAME, "None");
             String userToken = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString(LoginActivity.USER_TOKEN, "None");
 
-            if(isOnline()){
+            if(Utils.isOnline(MainActivity.this)){
                 getUserLocationPoints(location.getLatitude(), location.getLongitude(), userName, userToken);
             }
         }
@@ -598,17 +598,6 @@ public class MainActivity extends AppCompatActivity  implements
         //15 is just the perfect zoom
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
-
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        assert cm != null;
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnected();
-    }
-
-
 
 
     /*App lifecycle*/

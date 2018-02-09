@@ -49,7 +49,9 @@ public class PlaceActivity extends AppCompatActivity {
         PlaceImageHelper.image = null;
         ratingBar.setRating(place.getRating());
 
-        setUpFlyers(place.getId());
+        if(Utils.isOnline(PlaceActivity.this)){
+            setUpFlyers(place.getId());
+        }
         setUpToolbar(place.getName());
     }
 

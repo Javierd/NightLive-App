@@ -3,6 +3,8 @@ package com.javierd.nightlive;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 
 import java.text.DateFormat;
@@ -79,6 +81,15 @@ public class Utils {
         green = 255 - green;
 
         return Color.argb(alpha, red, green, blue);
+    }
+
+    public static boolean isOnline(Context mContext) {
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        assert cm != null;
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnected();
     }
 
 }
