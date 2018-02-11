@@ -20,6 +20,9 @@ public class Flyer {
     @SerializedName("price")
     @Expose
     private float price;
+    @SerializedName("currency")
+    @Expose
+    private String currency;
     @SerializedName("info")
     @Expose
     private String info;
@@ -76,6 +79,14 @@ public class Flyer {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public String getCurrency(){
+        return currency;
+    }
+
+    public void setCurrency(String currency){
+        this.currency = currency;
     }
 
     public String getQr() {

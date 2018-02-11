@@ -57,7 +57,7 @@ public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapte
 
     @Override
     public void onBindViewHolder(final FlyerViewHolder viewHolder, int i){
-        String sDate, endDate;
+        String sDate, endDate, price;
         int color;
         color = Color.parseColor(items.get(i).getColor());
         sDate = Utils.milisToDate(items.get(i).getStartTimestamp(), Utils.dateFormat);
@@ -70,7 +70,13 @@ public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapte
         viewHolder.nameTextView.setText(items.get(i).getName());
         viewHolder.infoTextView.setText(items.get(i).getInfo());
         viewHolder.datesTextView.setText(sDate+" - "+endDate);
-        viewHolder.priceTextView.setText(String.valueOf(items.get(i).getPrice()));
+
+        if(items.get(i).getCurrency() != null){
+            price = String.valueOf(items.get(i).getPrice()) + " " + items.get(i).getCurrency();
+        }else{
+            price = String.valueOf(items.get(i).getPrice());
+        }
+        viewHolder.priceTextView.setText(price);
 
         if(items.get(i).getColor() != null) {
             viewHolder.imageView.setBackgroundColor(color);
