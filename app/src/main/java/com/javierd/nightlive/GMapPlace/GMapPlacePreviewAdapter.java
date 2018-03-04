@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.javierd.nightlive.MainActivity;
 import com.javierd.nightlive.PlaceActivity;
 import com.javierd.nightlive.R;
 
@@ -74,18 +75,22 @@ public class GMapPlacePreviewAdapter extends RecyclerView.Adapter<GMapPlacePrevi
             @Override
             public void onClick(View view) {
                 GMapPlace place = items.get(viewHolder.getAdapterPosition());
+                PlaceImageHelper.image = place.getImage();
 
                 Intent i = new Intent(view.getContext(), PlaceActivity.class);
 
                 i.putExtra("place", place);
                 i.putExtra("latlng", place.getLocation());
-                PlaceImageHelper.image = place.getImage();
+                view.getContext().startActivity(i);
+
+                /* Hide the animations as they do not work well
 
                 ActivityOptionsCompat options = ActivityOptionsCompat
-                        .makeSceneTransitionAnimation((Activity) view.getContext(), view, view.getTransitionName());
+                        .makeSceneTransitionAnimation((Activity) view.getContext(), view, "sharedPlaceImage");
 
-                view.getContext().startActivity(i, options.toBundle());
+                view.getContext().startActivity(i, options.toBundle());*/
             }
         });
+
     }
 }

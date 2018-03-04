@@ -297,13 +297,13 @@ public class MainActivity extends AppCompatActivity  implements
         pointList = points;
 
         if( circleList == null){
-            circleList = new ArrayList<Circle>();
+            circleList = new ArrayList<>();
         }else{
             circleList.clear();
         }
 
         if( circleOptionsList == null ){
-            circleOptionsList = new ArrayList<CircleOptions>();
+            circleOptionsList = new ArrayList<>();
         }else{
             circleOptionsList.clear();
         }
@@ -578,6 +578,7 @@ public class MainActivity extends AppCompatActivity  implements
         LatLng centre = new LatLng(latitude, longitude);
 
         CircleOptions mCircleOptions = new CircleOptions()
+                .clickable(true)
                 .center(centre)
                 .radius(radius)
                 .strokeColor(ContextCompat.getColor(this, R.color.mapCircleStroke))
@@ -772,6 +773,7 @@ public class MainActivity extends AppCompatActivity  implements
 
                 int index = circleList.indexOf(circle);
                 if(index != -1){
+                    Log.i("Tocado", "Pulsado");
                     setUpDialog(pointList.get(index));
                 }
 
