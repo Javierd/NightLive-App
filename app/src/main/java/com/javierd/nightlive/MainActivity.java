@@ -290,6 +290,11 @@ public class MainActivity extends AppCompatActivity  implements
         if( circleList == null){
             circleList = new ArrayList<>();
         }else{
+            for(Circle c: circleList){
+                if(c != null){
+                    c.remove();
+                }
+            }
             circleList.clear();
         }
 
@@ -745,12 +750,8 @@ public class MainActivity extends AppCompatActivity  implements
 
                 int index = circleList.indexOf(circle);
                 if(index != -1){
-                    Log.i("PUNTO", "Pulsado");
                     setUpDialog(pointList.get(index));
-                }else{
-                    Log.i("PUNTO", "NO existe");
                 }
-
             }
         });
 
