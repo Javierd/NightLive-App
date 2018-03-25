@@ -138,7 +138,10 @@ public class PlaceActivity extends AppCompatActivity {
             public void onFailure(@NonNull Call<Flyers> call, @NonNull Throwable t) {
                 // Log error here since request failed
                 Log.i("Error gettings flyers", String.valueOf(t));
-                Toast.makeText(PlaceActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
+                // Make sure the error is not due to internet connection
+                if(Utils.isOnline(PlaceActivity.this)){
+                    Toast.makeText(PlaceActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

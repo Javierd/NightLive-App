@@ -167,15 +167,9 @@ public class MainActivity extends AppCompatActivity  implements
     private class ConnectionChangeReceiver extends BroadcastReceiver {
         @Override
         public void onReceive( Context context, Intent intent ) {
-            Log.i("NETWORK", "Received");
+            //Log.i("NETWORK", "Received");
 
-            ConnectivityManager cm =
-                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            assert cm != null;
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-            if( activeNetwork != null && activeNetwork.isConnected()){
+            if(Utils.isOnline(MainActivity.this)){
                 Log.i("NETWORK", "Connected");
                 if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
                     mNetworkSnackbar.dismiss();
@@ -280,7 +274,10 @@ public class MainActivity extends AppCompatActivity  implements
             public void onFailure(@NonNull Call<Points> call, @NonNull Throwable t) {
                 // Log error here since request failed
                 Log.i(getString(R.string.error_receiving_map), String.valueOf(t));
-                Toast.makeText(MainActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
+                // Make sure the error is not due to internet connection
+                if(Utils.isOnline(MainActivity.this)){
+                    Toast.makeText(MainActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -748,8 +745,10 @@ public class MainActivity extends AppCompatActivity  implements
 
                 int index = circleList.indexOf(circle);
                 if(index != -1){
-                    Log.i("Tocado", "Pulsado");
+                    Log.i("PUNTO", "Pulsado");
                     setUpDialog(pointList.get(index));
+                }else{
+                    Log.i("PUNTO", "NO existe");
                 }
 
             }

@@ -394,7 +394,10 @@ public class LoginActivity extends AppCompatActivity implements DatePickerDialog
                 // Log error here since request failed
                 fabProgressCircle.hide();
                 Log.i("Error signing in", String.valueOf(t));
-                Toast.makeText(LoginActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
+                // Make sure the error is not due to internet connection
+                if(Utils.isOnline(LoginActivity.this)){
+                    Toast.makeText(LoginActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -472,7 +475,9 @@ public class LoginActivity extends AppCompatActivity implements DatePickerDialog
                 // Log error here since request failed
                 fabProgressCircle.hide();
                 Log.i("Error signing up", String.valueOf(t));
-                Toast.makeText(LoginActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
+                if(Utils.isOnline(LoginActivity.this)){
+                    Toast.makeText(LoginActivity.this, getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
