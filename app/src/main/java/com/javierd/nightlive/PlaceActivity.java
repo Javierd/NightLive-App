@@ -92,7 +92,8 @@ public class PlaceActivity extends AppCompatActivity {
 
         if (getSupportActionBar() == null)
             return;
-        //TODO It doesnt work well getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //TODO It doesnt work well
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if(title != null)
             getSupportActionBar().setTitle(title);
     }

@@ -50,6 +50,7 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
@@ -62,7 +63,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.maps.android.SphericalUtil;
-import com.javierd.nightlive.CustomMapFragment.CustomMapFragment;
 import com.javierd.nightlive.GMapPlace.GMapPlace;
 import com.javierd.nightlive.GMapPlace.GMapPlacePreviewAdapter;
 import com.javierd.nightlive.RestUtils.Place;
@@ -81,7 +81,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        OnMapReadyCallback{
+        OnMapReadyCallback,
+        GoogleMap.OnCameraMoveStartedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     // Used in checking for runtime permissions.
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity  implements
     private boolean mapCentered = false;
 
     private GoogleApiClient mGoogleApiClient;
-    private CustomMapFragment mMapFragment;
+    private SupportMapFragment mMapFragment;
     private GoogleMap mapLoaded;
     private PopupWindow mPopupWindow;
 
@@ -220,18 +221,11 @@ public class MainActivity extends AppCompatActivity  implements
         /*TODO*/
 
         //Load the map
-        mMapFragment = CustomMapFragment.newInstance();
+        mMapFragment = SupportMapFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.map_container, mMapFragment)
                 .commit();
-
-        mMapFragment.setOnTouchListener(new CustomMapFragment.OnTouchListener() {
-            @Override
-            public void onTouch() {
-                setUpPopupWindow(getResources().getString(R.string.search_this_area));
-            }
-        });
 
         mMapFragment.getMapAsync(this);
     }
@@ -408,13 +402,13 @@ public class MainActivity extends AppCompatActivity  implements
     protected void setUpDialog(Point point){
         BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(MainActivity.this, R.style.PlaceDialog);
         View sheetView = MainActivity.this.getLayoutInflater().inflate(R.layout.dialog_point_info, null);
-        sheetView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+        sheetView.setBackgroundColor(ContextCompat.getColor(MainActivity.this, android.R.color.transparent));
 
         List<Place> placesList =  point.getPlaces();
-        final List<GMapPlace> gMapsPlacesList = new ArrayList<GMapPlace>();
+        final List<GMapPlace> gMapsPlacesList = new ArrayList<>();
 
         RecyclerView placeRecycler = (RecyclerView) sheetView.findViewById(R.id.placeRecyclerView);
-        RecyclerView.LayoutManager placeLManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager placeLManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
         placeRecycler.setLayoutManager(placeLManager);
 
         placeAdapter = new GMapPlacePreviewAdapter(gMapsPlacesList);
@@ -439,14 +433,13 @@ public class MainActivity extends AppCompatActivity  implements
                                 String address = place.getAddress().toString();
                                 String phoneNumber = place.getPhoneNumber().toString();
                                 Uri websiteUri = place.getWebsiteUri();
-
+                                if(priceLevel != -1){
+                                    price = String.valueOf(priceLevel)  + "/4";
+                                }
 
                                 GMapPlace gMapPlace = new GMapPlace(id, name, price, rating, null, location, address, websiteUri, phoneNumber);
 
                                 getPlacePhotosTask(id, gMapPlace, position);
-                                if(priceLevel != -1){
-                                    price = String.valueOf(priceLevel)  + "/4";
-                                }
 
                                 gMapsPlacesList.add(gMapPlace);
                                 placeAdapter.notifyItemInserted(position);
@@ -478,24 +471,14 @@ public class MainActivity extends AppCompatActivity  implements
         LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
         // Inflate the custom layout/view
+        assert inflater != null;
         View customView = inflater.inflate(R.layout.popup_window_map,null);
 
-                /*
-                    public PopupWindow (View contentView, int width, int height)
-                        Create a new non focusable popup window which can display the contentView.
-                        The dimension of the window must be passed to this constructor.
-
-                        The popup does not provide any background. This should be handled by
-                        the content view.
-
-                    Parameters
-                        contentView : the popup's content
-                        width : the popup's width
-                        height : the popup's height
-                */
-        // Initialize a new instance of popup window
-
-        //TODO ANIMATE
+        /*
+           contentView : the popup's content
+           width : the popup's width
+           height : the popup's height
+        */
         mPopupWindow = new PopupWindow(
                 customView,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -503,7 +486,7 @@ public class MainActivity extends AppCompatActivity  implements
         );
 
         mPopupWindow.setElevation(6.0f);
-        //mPopupWindow.setAnimationStyle(R.style.PopupAnimation);
+        mPopupWindow.setAnimationStyle(R.style.PopupAnimation);
 
         // Get a reference for the custom view close button
         TextView textView = (TextView) customView.findViewById(R.id.textView);
@@ -514,7 +497,6 @@ public class MainActivity extends AppCompatActivity  implements
             @Override
             public void onClick(View view) {
                 // Dismiss the popup window
-                //TODO ANIMATE
 
                 if(mapLoaded != null){
                     String userName = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString(LoginActivity.USER_NAME, "None");
@@ -529,21 +511,12 @@ public class MainActivity extends AppCompatActivity  implements
             }
         });
 
-                /*
-                    public void showAtLocation (View parent, int gravity, int x, int y)
-                        Display the content view in a popup window at the specified location. If the
-                        popup window cannot fit on screen, it will be clipped.
-                        Learn WindowManager.LayoutParams for more information on how gravity and the x
-                        and y parameters are related. Specifying a gravity of NO_GRAVITY is similar
-                        to specifying Gravity.LEFT | Gravity.TOP.
-
-                    Parameters
-                        parent : a parent view to get the getWindowToken() token from
-                        gravity : the gravity which controls the placement of the popup window
-                        x : the popup's x location offset
-                        y : the popup's y location offset
-                */
-        // Finally, show the popup window at the center location of root relative layout
+         /*
+           parent : a parent view to get the getWindowToken() token from
+           gravity : the gravity which controls the placement of the popup window
+           x : the popup's x location offset
+           y : the popup's y location offset
+        */
         mPopupWindow.showAtLocation(mMapFragment.getView(), Gravity.BOTTOM,0,180);
     }
 
@@ -765,6 +738,8 @@ public class MainActivity extends AppCompatActivity  implements
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json_clear));
         //googleMap.setBuildingsEnabled (false);
         googleMap.setIndoorEnabled(false);
+        //Listener which receives the user movements
+        googleMap.setOnCameraMoveStartedListener(this);
 
 
         mapLoaded.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
@@ -783,6 +758,21 @@ public class MainActivity extends AppCompatActivity  implements
         /*googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(40.3839, -100.9565), 2));*/
 
+    }
+
+    @Override
+    public void onCameraMoveStarted(int reason) {
+
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            // The user gestured on the map.
+            setUpPopupWindow(getResources().getString(R.string.search_this_area));
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_API_ANIMATION) {
+            // "The user tapped something on the map.
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_DEVELOPER_ANIMATION) {
+            // The app moved the camera.
+        }
     }
 
     /*Google API methods*/
