@@ -486,7 +486,7 @@ public class MainActivity extends AppCompatActivity  implements
         );
 
         mPopupWindow.setElevation(6.0f);
-        mPopupWindow.setAnimationStyle(R.style.PopupAnimation);
+        mPopupWindow.setAnimationStyle(R.style.style_popup_anim);
 
         // Get a reference for the custom view close button
         TextView textView = (TextView) customView.findViewById(R.id.textView);
