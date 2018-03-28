@@ -573,6 +573,9 @@ public class MainActivity extends NetworkActivity  implements
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocationReceiver);
+        if(mPopupWindow != null && mPopupWindow.isShowing()){
+            mPopupWindow.dismiss();
+        }
     }
 
     @Override
@@ -587,6 +590,10 @@ public class MainActivity extends NetworkActivity  implements
             // service.
             unbindService(mServiceConnection);
             mBound = false;
+        }
+
+        if(mPopupWindow != null && mPopupWindow.isShowing()){
+            mPopupWindow.dismiss();
         }
     }
 
