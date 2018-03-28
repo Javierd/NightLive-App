@@ -83,6 +83,36 @@ public class Utils {
         return Color.argb(alpha, red, green, blue);
     }
 
+    /**
+     * Returns a color which fits as text color for
+     * a given background color
+     * @param color The {@link int} the color
+     * @return text color
+     * */
+    public static int getTextColor(int color) {
+        // Get existing colors
+        int red = Color.red(color);
+        int blue = Color.blue(color);
+        int green = Color.green(color);
+
+        // If a < 0.5, the color is light
+        // We take into account that human eye favors green color
+        double a = 1 - (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+        double factor;
+        if(a < 0.5){
+            //We need to make the color darker
+            red *= 0.25;
+            blue *= 0.25;
+            green *= 0.25;
+        }else{
+            red *= 4;
+            blue *= 4;
+            green *= 4;
+        }
+
+        return Color.argb(255, red, green, blue);
+    }
+
     public static boolean isOnline(Context mContext) {
         ConnectivityManager cm =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);

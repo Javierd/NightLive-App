@@ -63,9 +63,9 @@ public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapte
         sDate = Utils.milisToDate(items.get(i).getStartTimestamp(), Utils.dateFormat);
         endDate = Utils.milisToDate(items.get(i).getEndTimestamp(), Utils.dateFormat);
 
-        viewHolder.nameTextView.setTextColor(Utils.getNegativeColor(color));
-        viewHolder.datesTextView.setTextColor(Utils.getNegativeColor(color));
-        viewHolder.priceTextView.setTextColor(Utils.getNegativeColor(color));
+        viewHolder.nameTextView.setTextColor(Utils.getTextColor(color));
+        viewHolder.datesTextView.setTextColor(Utils.getTextColor(color));
+        viewHolder.priceTextView.setTextColor(Utils.getTextColor(color));
 
         viewHolder.nameTextView.setText(items.get(i).getName());
         viewHolder.infoTextView.setText(items.get(i).getInfo());
