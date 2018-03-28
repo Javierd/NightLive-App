@@ -78,7 +78,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity  implements
+public class MainActivity extends NetworkActivity  implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         OnMapReadyCallback,
@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity  implements
     // Used in checking for runtime permissions.
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private LocationReceiver mLocationReceiver;
-    private ConnectionChangeReceiver mNetworkReceiver;
     private LocationUpdatesService mService = null;
 
     // Tracks the bound state of the service.
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity  implements
     private RecyclerView.Adapter placeAdapter;
     private Snackbar mNetworkSnackbar;
 
-    // Monitors the state of the connection to the service.
+    // Monitors the state of the connection to the location update service.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
         @Override
@@ -163,38 +162,12 @@ public class MainActivity extends AppCompatActivity  implements
         }
     }
 
-
-    private class ConnectionChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive( Context context, Intent intent ) {
-            //Log.i("NETWORK", "Received");
-
-            if(Utils.isOnline(MainActivity.this)){
-                Log.i("NETWORK", "Connected");
-                if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
-                    mNetworkSnackbar.dismiss();
-                }
-            }else{
-               //TODO Look for better options
-                if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
-                    mNetworkSnackbar.dismiss();
-                }
-
-                mNetworkSnackbar = Snackbar.make(findViewById(R.id.map_container),
-                        R.string.no_internet, Snackbar.LENGTH_INDEFINITE);
-                mNetworkSnackbar.show();
-                Log.i("NETWORK", "Disconnected");
-            }
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mLocationReceiver = new LocationReceiver();
-        mNetworkReceiver = new ConnectionChangeReceiver();
 
         boolean signedInUser = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean(LoginActivity.SIGNED_IN_USER, false);
         if(!signedInUser){
@@ -594,24 +567,18 @@ public class MainActivity extends AppCompatActivity  implements
         // LocationReceiver
         LocalBroadcastManager.getInstance(this).registerReceiver(mLocationReceiver,
                 new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
-
-        //NetworkReceiver
-        // In this case we cannot use a LocalBroadcastManager because the broadcast is not send from our app.
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        MainActivity.this.registerReceiver(mNetworkReceiver , filter);
     }
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocationReceiver);
-
-        MainActivity.this.unregisterReceiver(mNetworkReceiver);
-
         super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocationReceiver);
     }
 
     @Override
     protected void onStop() {
+        super.onStop();
+
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
         if (mBound) {
@@ -621,8 +588,6 @@ public class MainActivity extends AppCompatActivity  implements
             unbindService(mServiceConnection);
             mBound = false;
         }
-
-        super.onStop();
     }
 
     /**
@@ -789,5 +754,25 @@ public class MainActivity extends AppCompatActivity  implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    protected void onNetworkChange(){
+        if(Utils.isOnline(MainActivity.this)){
+            Log.i("NETWORK", "Connected");
+            if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
+                mNetworkSnackbar.dismiss();
+            }
+        }else{
+            //TODO Look for better options
+            if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
+                mNetworkSnackbar.dismiss();
+            }
+
+            mNetworkSnackbar = Snackbar.make(findViewById(R.id.map_container),
+                    R.string.no_internet, Snackbar.LENGTH_INDEFINITE);
+            mNetworkSnackbar.show();
+            Log.i("NETWORK", "Disconnected");
+        }
     }
 }

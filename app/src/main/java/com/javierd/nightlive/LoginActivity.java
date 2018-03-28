@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -47,7 +48,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class LoginActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class LoginActivity extends NetworkActivity implements DatePickerDialog.OnDateSetListener {
 
     EditText birthdateTextView;
     long birthdateMillis = -1;
@@ -62,6 +63,7 @@ public class LoginActivity extends AppCompatActivity implements DatePickerDialog
     LinearLayout layoutUserPassword;
     LinearLayout layoutUserPassName;
     RelativeLayout layoutUserInfo;
+    Snackbar mNetworkSnackbar;
 
     ArrayList<PlaceStyle> ITEMS;
 
@@ -149,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements DatePickerDialog
         floatLabelPassName.setErrorEnabled(false);
         floatLabelPassword.setErrorEnabled(false);
 
-        if(!isOnline()){
+        if(!Utils.isOnline(LoginActivity.this)){
             Toast.makeText(LoginActivity.this, getResources().getString(R.string.no_internet), Toast.LENGTH_LONG).show();
         }
 
@@ -322,14 +324,6 @@ public class LoginActivity extends AppCompatActivity implements DatePickerDialog
 
         mView1.startAnimation(slideOut);
         mView2.startAnimation(slideIn);
-    }
-
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnected();
     }
 
     protected void storeSignedInUser(final String userName, final String token){
@@ -592,6 +586,25 @@ public class LoginActivity extends AppCompatActivity implements DatePickerDialog
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
+    }
 
+    @Override
+    protected void onNetworkChange(){
+        if(Utils.isOnline(LoginActivity.this)){
+            Log.i("NETWORK", "Connected");
+            if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
+                mNetworkSnackbar.dismiss();
+            }
+        }else{
+            //TODO Look for better options
+            if(mNetworkSnackbar != null && mNetworkSnackbar.isShown()){
+                mNetworkSnackbar.dismiss();
+            }
+
+            mNetworkSnackbar = Snackbar.make(findViewById(R.id.coordinatorLayout),
+                    R.string.no_internet, Snackbar.LENGTH_INDEFINITE);
+            mNetworkSnackbar.show();
+            Log.i("NETWORK", "Disconnected");
+        }
     }
 }

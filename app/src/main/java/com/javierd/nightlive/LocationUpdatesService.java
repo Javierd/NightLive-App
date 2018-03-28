@@ -372,7 +372,7 @@ public class LocationUpdatesService extends Service{
     }
 
     private void onNewLocation(Location location) {
-        Log.i(TAG, "New location");
+        //Log.i(TAG, "New location");
 
         mLocation = location;
 
