@@ -117,7 +117,9 @@ public class MainActivity extends NetworkActivity  implements
 
             if (!checkPermissions()) {
                 requestPermissions();
+                Log.i("ERROR", "NO ENOUGH PERMISSIONS 1");
             } else {
+                Log.i("PERFECT", "ENOUGH PERMISSIONS 1");
                 mService.requestLocationUpdates();
             }
             mBound = true;
@@ -179,22 +181,25 @@ public class MainActivity extends NetworkActivity  implements
 
         if (!checkPermissions()) {
             requestPermissions();
+        }else{
+            Log.i("TODO BIEN", "Tenemos permisos");
+                    /*Connect to Google Api to display the map*/
+                    connectGoogleApiClient();
+
+                /*Check whether user has enabled the GPS on high accuracy*/
+                /*TODO*/
+
+                    //Load the map
+                    mMapFragment = SupportMapFragment.newInstance();
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(R.id.map_container, mMapFragment)
+                            .commit();
+
+                    mMapFragment.getMapAsync(this);
         }
 
-        /*Connect to Google Api to display the map*/
-        connectGoogleApiClient();
 
-        /*Check whether user has enabled the GPS on high accuracy*/
-        /*TODO*/
-
-        //Load the map
-        mMapFragment = SupportMapFragment.newInstance();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.map_container, mMapFragment)
-                .commit();
-
-        mMapFragment.getMapAsync(this);
     }
 
     protected void connectGoogleApiClient() {
@@ -553,12 +558,17 @@ public class MainActivity extends NetworkActivity  implements
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        if(mGoogleApiClient != null && checkPermissions()) {
+            mGoogleApiClient.connect();
+        }
 
-        // Bind to the service. If the service is in foreground mode, this signals to the service
-        // that since this activity is in the foreground, the service can exit foreground mode.
-        bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
-                Context.BIND_AUTO_CREATE);
+        if(checkPermissions()) {
+            /*TODO  Solo fallaba aquí, mirar por que, y hay que añadirlo al recibir lo de si se han aceptado los permisos o no.*/
+            // Bind to the service. If the service is in foreground mode, this signals to the service
+            // that since this activity is in the foreground, the service can exit foreground mode.
+            bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
+                    Context.BIND_AUTO_CREATE);
+        }
     }
 
     @Override
@@ -653,7 +663,9 @@ public class MainActivity extends NetworkActivity  implements
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission was granted.
-                mService.requestLocationUpdates();
+                bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
+                        Context.BIND_AUTO_CREATE);
+                //mService.requestLocationUpdates();
                 Toast.makeText(this, getString(R.string.permission_granted), Toast.LENGTH_LONG).show();
             } else {
                 // Permission denied.
@@ -699,7 +711,7 @@ public class MainActivity extends NetworkActivity  implements
         mapLoaded.setMaxZoomPreference(18.0f);
 
         if (checkPermissions()) {
-
+            Log.i("OK", "Tenemos permisos 2");
             googleMap.setMyLocationEnabled(true);
             uiSettings.setMyLocationButtonEnabled(true);
 
@@ -750,6 +762,9 @@ public class MainActivity extends NetworkActivity  implements
     /*Google API methods*/
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        if(!checkPermissions()){
+            Log.i("Error", "No hay suficientes permisos");
+        }
 
     }
 

@@ -192,6 +192,9 @@ public class LocationUpdatesService extends Service{
      *                   going to be in foreground, false if not
      * */
     public void changeLocationRequest(boolean foreground){
+        if(Utils.checkLocationPermissions(this) == false){
+            return;
+        }
         // Remove the location updates
         try {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
@@ -281,6 +284,7 @@ public class LocationUpdatesService extends Service{
         Utils.setRequestingLocationUpdates(this, true);
         startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
         try {
+            Log.i("ERROR", "PIDIENDO PERMISOS");
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                     mLocationCallback, Looper.myLooper());
         } catch (SecurityException unlikely) {
