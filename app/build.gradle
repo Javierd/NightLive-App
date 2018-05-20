@@ -44,7 +44,7 @@ dependencies {
     // FABProgressCircle
     implementation 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     // Glide image library
-    implementation 'com.github.bumptech.glide:glide:3.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
     // Expandable layout
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
 }

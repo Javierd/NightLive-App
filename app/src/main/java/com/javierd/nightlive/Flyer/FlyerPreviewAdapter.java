@@ -3,6 +3,7 @@ package com.javierd.nightlive.Flyer;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.javierd.nightlive.R;
 import com.javierd.nightlive.Utils;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.List;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapter.FlyerViewHolder>{
     private List<Flyer> items;
@@ -58,8 +62,11 @@ public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapte
     @Override
     public void onBindViewHolder(final FlyerViewHolder viewHolder, int i){
         String sDate, endDate, price;
-        int color;
-        color = Color.parseColor(items.get(i).getColor());
+        int color = Color.LTGRAY;
+        if(items.get(i).getColor() != null){
+            color = Color.parseColor(items.get(i).getColor());
+        }
+
         sDate = Utils.milisToDate(items.get(i).getStartTimestamp(), Utils.dateFormat);
         endDate = Utils.milisToDate(items.get(i).getEndTimestamp(), Utils.dateFormat);
 
@@ -78,15 +85,20 @@ public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapte
         }
         viewHolder.priceTextView.setText(price);
 
+        RequestOptions options = new RequestOptions()
+                .fitCenter()
+                .error(R.drawable.app_name);
+
         if(items.get(i).getColor() != null) {
             viewHolder.imageView.setBackgroundColor(color);
             ColorDrawable colorDrawable = new ColorDrawable(color);
+            options = options.placeholder(colorDrawable);
         }
+
         Glide.with(viewHolder.imageView.getContext())
                 .load(items.get(i).getImage())
-                .error(R.drawable.app_name)
-                /*.placeholder(colorDrawable)*/
-                .fitCenter()
+                .transition(withCrossFade())
+                .apply(options)
                 .into(viewHolder.imageView);
 
         viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
