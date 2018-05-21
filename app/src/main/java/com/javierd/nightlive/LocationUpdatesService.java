@@ -192,7 +192,7 @@ public class LocationUpdatesService extends Service{
      *                   going to be in foreground, false if not
      * */
     public void changeLocationRequest(boolean foreground){
-        if(Utils.checkLocationPermissions(this) == false){
+        if(!Utils.checkLocationPermissions(this)){
             return;
         }
         // Remove the location updates

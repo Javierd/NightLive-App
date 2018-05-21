@@ -181,24 +181,21 @@ public class MainActivity extends NetworkActivity  implements
 
         if (!checkPermissions()) {
             requestPermissions();
-        }else{
-            Log.i("TODO BIEN", "Tenemos permisos");
-                    /*Connect to Google Api to display the map*/
-                    connectGoogleApiClient();
-
-                /*Check whether user has enabled the GPS on high accuracy*/
-                /*TODO*/
-
-                    //Load the map
-                    mMapFragment = SupportMapFragment.newInstance();
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .add(R.id.map_container, mMapFragment)
-                            .commit();
-
-                    mMapFragment.getMapAsync(this);
         }
 
+        /*Connect to Google Api to display the map*/
+        connectGoogleApiClient();
+
+        /*Check whether user has enabled the GPS on high accuracy*/
+        /*TODO*/
+        //Load the map
+        mMapFragment = SupportMapFragment.newInstance();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.map_container, mMapFragment)
+                .commit();
+
+        mMapFragment.getMapAsync(this);
 
     }
 
@@ -530,15 +527,13 @@ public class MainActivity extends NetworkActivity  implements
 
         LatLng centre = new LatLng(latitude, longitude);
 
-        CircleOptions mCircleOptions = new CircleOptions()
+        return new CircleOptions()
                 .clickable(true)
                 .center(centre)
                 .radius(radius)
                 .strokeColor(ContextCompat.getColor(this, R.color.mapCircleStroke))
                 .strokeWidth(4)
                 .fillColor(ContextCompat.getColor(this, R.color.mapCircleFill));
-
-        return mCircleOptions;
     }
 
     protected void moveCamera(GoogleMap map, Location loc){
@@ -652,6 +647,7 @@ public class MainActivity extends NetworkActivity  implements
     /**
      * Callback received when a permissions request has been completed.
      */
+    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -667,6 +663,12 @@ public class MainActivity extends NetworkActivity  implements
                         Context.BIND_AUTO_CREATE);
                 //mService.requestLocationUpdates();
                 Toast.makeText(this, getString(R.string.permission_granted), Toast.LENGTH_LONG).show();
+
+                if(mapLoaded != null){
+                    mapLoaded.setMyLocationEnabled(true);
+                    mapLoaded.getUiSettings().setMyLocationButtonEnabled(true);
+                }
+
             } else {
                 // Permission denied.
                 Snackbar.make(
