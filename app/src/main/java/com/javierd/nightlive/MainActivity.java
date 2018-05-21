@@ -117,9 +117,7 @@ public class MainActivity extends NetworkActivity  implements
 
             if (!Utils.checkLocationPermissions(MainActivity.this)) {
                 requestPermissions();
-                Log.i("ERROR", "NO ENOUGH PERMISSIONS 1");
             } else {
-                Log.i("PERFECT", "ENOUGH PERMISSIONS 1");
                 mService.requestLocationUpdates();
             }
             mBound = true;

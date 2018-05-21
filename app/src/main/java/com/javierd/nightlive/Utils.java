@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -101,16 +102,15 @@ public class Utils {
         // If a < 0.5, the color is light
         // We take into account that human eye favors green color
         double a = 1 - (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
-        double factor;
         if(a < 0.5){
             //We need to make the color darker
             red *= 0.25;
             blue *= 0.25;
             green *= 0.25;
         }else{
-            red *= 4;
-            blue *= 4;
-            green *= 4;
+            red = Math.min(red*4, 255);
+            blue = Math.min(blue*4, 255);
+            green = Math.min(green*4, 255);
         }
 
         return Color.argb(255, red, green, blue);
