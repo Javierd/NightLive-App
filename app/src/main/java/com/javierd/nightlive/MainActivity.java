@@ -115,7 +115,7 @@ public class MainActivity extends NetworkActivity  implements
             LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) service;
             mService = binder.getService();
 
-            if (!checkPermissions()) {
+            if (!Utils.checkLocationPermissions(MainActivity.this)) {
                 requestPermissions();
                 Log.i("ERROR", "NO ENOUGH PERMISSIONS 1");
             } else {
@@ -148,7 +148,6 @@ public class MainActivity extends NetworkActivity  implements
                 LatLngBounds mapView = toBounds(userLoc, 400); //400m of radius as the viewport can be moved arround
                 //mapLoaded.setLatLngBoundsForCameraTarget(mapView);
 
-
                 if(!mapCentered){
                     mapCentered = true;
                     moveCamera(mapLoaded, location);
@@ -179,7 +178,7 @@ public class MainActivity extends NetworkActivity  implements
             finish();
         }
 
-        if (!checkPermissions()) {
+        if (!Utils.checkLocationPermissions(MainActivity.this)) {
             requestPermissions();
         }
 
@@ -188,7 +187,7 @@ public class MainActivity extends NetworkActivity  implements
 
         /*Check whether user has enabled the GPS on high accuracy*/
         /*TODO*/
-        //Load the map
+        /*Load the map*/
         mMapFragment = SupportMapFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
@@ -553,12 +552,11 @@ public class MainActivity extends NetworkActivity  implements
     @Override
     protected void onStart() {
         super.onStart();
-        if(mGoogleApiClient != null && checkPermissions()) {
+        if(mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
 
-        if(checkPermissions()) {
-            /*TODO  Solo fallaba aquí, mirar por que, y hay que añadirlo al recibir lo de si se han aceptado los permisos o no.*/
+        if(Utils.checkLocationPermissions(MainActivity.this)) {
             // Bind to the service. If the service is in foreground mode, this signals to the service
             // that since this activity is in the foreground, the service can exit foreground mode.
             bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection,
@@ -600,14 +598,6 @@ public class MainActivity extends NetworkActivity  implements
         if(mPopupWindow != null && mPopupWindow.isShowing()){
             mPopupWindow.dismiss();
         }
-    }
-
-    /**
-     * Returns the current state of the permissions needed.
-     */
-    private boolean checkPermissions() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermissions() {
@@ -712,8 +702,7 @@ public class MainActivity extends NetworkActivity  implements
         mapLoaded.setMinZoomPreference(14.6f);
         mapLoaded.setMaxZoomPreference(18.0f);
 
-        if (checkPermissions()) {
-            Log.i("OK", "Tenemos permisos 2");
+        if (Utils.checkLocationPermissions(MainActivity.this)) {
             googleMap.setMyLocationEnabled(true);
             uiSettings.setMyLocationButtonEnabled(true);
 
@@ -764,8 +753,8 @@ public class MainActivity extends NetworkActivity  implements
     /*Google API methods*/
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if(!checkPermissions()){
-            Log.i("Error", "No hay suficientes permisos");
+        if(!Utils.checkLocationPermissions(MainActivity.this)){
+            requestPermissions();
         }
 
     }
