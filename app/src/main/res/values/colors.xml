@@ -28,6 +28,6 @@
     <color name="ratingBarColor">#FFD600</color>
     <color name="ratingBarBGColor">#EEEEEE</color>
 
-    <color name="popup_window_map_color">#00BCD4</color>
+    <color name="popup_window_map_color">#304ffe</color>
 
 </resources>
