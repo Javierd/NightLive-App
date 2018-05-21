@@ -397,7 +397,7 @@ public class MainActivity extends NetworkActivity  implements
             Places.GeoDataApi.getPlaceById(mGoogleApiClient, id)
                     .setResultCallback(new ResultCallback<PlaceBuffer>() {
                         @Override
-                        public void onResult(PlaceBuffer places) {
+                        public void onResult(@NonNull PlaceBuffer places) {
                             if (places.getStatus().isSuccess() && places.getCount() > 0) {
                                 final com.google.android.gms.location.places.Place place = places.get(0);
 
@@ -406,8 +406,16 @@ public class MainActivity extends NetworkActivity  implements
                                 String price = "Price not available";
                                 float rating = place.getRating();
                                 LatLng location = place.getLatLng();
-                                String address = place.getAddress().toString();
-                                String phoneNumber = place.getPhoneNumber().toString();
+                                String address = getResources().getString(R.string.address_not_available);
+                                if(place.getAddress() != null){
+                                    address = place.getAddress().toString();
+                                }
+
+                                String phoneNumber = getResources().getString(R.string.phone_not_available);
+                                if(place.getPhoneNumber() != null){
+                                    phoneNumber = place.getPhoneNumber().toString();
+                                }
+
                                 Uri websiteUri = place.getWebsiteUri();
                                 if(priceLevel != -1){
                                     price = String.valueOf(priceLevel)  + "/4";

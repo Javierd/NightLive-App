@@ -3,6 +3,7 @@ package com.javierd.nightlive.GMapPlace;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -58,11 +59,12 @@ public class GMapPlacePreviewAdapter extends RecyclerView.Adapter<GMapPlacePrevi
     }
 
     @Override
-    public void onBindViewHolder(final GMapPlaceViewHolder viewHolder, int i){
+    public void onBindViewHolder(@NonNull final GMapPlaceViewHolder viewHolder, int i){
         viewHolder.descTextView.setText(items.get(i).getDesc());
         viewHolder.nameTextView.setText(items.get(i).getName());
         viewHolder.ratingTextView.setText(String.valueOf(items.get(i).getRating())+"/5");
         viewHolder.ratingBar.setRating(items.get(i).getRating());
+        
         Bitmap image = items.get(i).getImage();
         if(image == null){
             viewHolder.imageProgressbar.setVisibility(View.VISIBLE);

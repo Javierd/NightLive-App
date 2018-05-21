@@ -36,6 +36,13 @@
     <string name="signed_up">Signed up correctly</string>
     <string name="signing_in">Signing in</string>
     <string name="signing_up">Signing up</string>
+    <string name="no_map_application">No navigation app found.</string>
+
+    <!-- Place -->
+    <string name="address_not_available">Address not available.</string>
+    <string name="phone_not_available">Phone number not available.</string>
+    <string name="place_general_information">General information</string>
+    <string name="place_flyers">Flyers</string>
 
     <!--Music styles-->
     <string-array name="styles_names">

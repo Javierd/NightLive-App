@@ -1,7 +1,11 @@
 package com.javierd.nightlive;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,9 +13,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -35,11 +41,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PlaceActivity extends NetworkActivity {
 
-    ImageView imageView;
-    List<Flyer> flyerList;
-    RecyclerView flyerRecycler;
-    RecyclerView.Adapter flyerAdapter;
+    private ImageView imageView;
+    private List<Flyer> flyerList;
+    private RecyclerView flyerRecycler;
+    private RecyclerView.Adapter flyerAdapter;
     private Snackbar mNetworkSnackbar;
+    private GMapPlace place;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +57,10 @@ public class PlaceActivity extends NetworkActivity {
 
         imageView = (ImageView) findViewById(R.id.imageView);
         RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        TextView descriptionTextView = (TextView) findViewById(R.id.description);
 
-        final GMapPlace place = getIntent().getParcelableExtra("place");
+
+        place = getIntent().getParcelableExtra("place");
         LatLng location = getIntent().getParcelableExtra("latlng");
         place.changeLocation(location);
         place.changeImage(PlaceImageHelper.image);
@@ -71,11 +80,13 @@ public class PlaceActivity extends NetworkActivity {
 
         PlaceImageHelper.image = null;
         ratingBar.setRating(place.getRating());
+        descriptionTextView.setText(place.getDesc());
 
         /*Set up the recycler view*/
         int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.flyer_card_padding_bottom);
         flyerList = new ArrayList<>();
         flyerRecycler = (RecyclerView) findViewById(R.id.flyerRecyclerView);
+        flyerRecycler.setNestedScrollingEnabled(false);
         RecyclerView.LayoutManager flyerLManager = new LinearLayoutManager(PlaceActivity.this, LinearLayoutManager.VERTICAL, false);
         flyerRecycler.setLayoutManager(flyerLManager);
         flyerRecycler.addItemDecoration(new FlyerItemDecoration(spaceInPixels));
@@ -94,10 +105,27 @@ public class PlaceActivity extends NetworkActivity {
 
         if (getSupportActionBar() == null)
             return;
-        //TODO It doesnt work well
+
+        //TODO Improve the animation. It is not smooth enough
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if(title != null)
             getSupportActionBar().setTitle(title);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q="+place.getLocation().latitude+","+place.getLocation().longitude
+                    +"("+Uri.encode(place.getName()+")"));
+
+                Intent intent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                try {
+                    startActivity(intent);
+                }catch (ActivityNotFoundException e){
+                    Toast.makeText(PlaceActivity.this, getResources().getString(R.string.no_map_application), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     void setUpFlyers(String placeId){
@@ -150,8 +178,7 @@ public class PlaceActivity extends NetworkActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (Integer.parseInt(android.os.Build.VERSION.SDK) > 5
-                && keyCode == KeyEvent.KEYCODE_BACK
+        if (keyCode == KeyEvent.KEYCODE_BACK
                 && event.getRepeatCount() == 0) {
             /*Ensure the animation is displayed when we go back*/
             supportFinishAfterTransition();

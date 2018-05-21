@@ -30,4 +30,9 @@
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
+
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/ratingBarBGColor</item>
+        <item name="colorControlActivated">@color/ratingBarColor</item>
+    </style>
 </resources>

@@ -50,7 +50,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/fab_margin"
-    android:src="@drawable/ic_arrow_right"
+    android:src="@drawable/ic_directions"
     app:borderWidth="0dp"
     app:layout_anchor="@id/app_bar"
     app:layout_anchorGravity="bottom|right|end" />
@@ -72,32 +72,19 @@
         android:paddingTop="@dimen/activity_vertical_margin">
 
         <TextView
-            android:id="@+id/detail_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nombre"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/detail_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Precio"
-            android:textColor="?colorPrimary"
-            android:textStyle="bold" />
-
-        <TextView
             android:id="@+id/tag_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="16dp"
-            android:text="DESCRIPCIÓN"
-            android:textColor="?colorPrimary" />
+            android:text="@string/place_general_information"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/colorAccent" />
 
         <TextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:text="Descripción" />
 
         <RatingBar
@@ -105,21 +92,23 @@
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:isIndicator="true"
             android:paddingTop="8dp"
-            android:progressTint="#FDDB39"
             android:rating="3"
-            android:secondaryProgressTint="#FDDB39" />
+            android:theme="@style/RatingBar" />
 
         <TextView
-            android:id="@+id/detail_author"
+            android:id="@+id/tag_flyers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Autor" />
+            android:paddingTop="16dp"
+            android:text="@string/place_flyers"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/colorAccent" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/flyerRecyclerView"
+            android:layout_margin="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical" />

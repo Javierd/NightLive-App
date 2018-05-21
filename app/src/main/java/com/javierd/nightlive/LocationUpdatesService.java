@@ -284,7 +284,6 @@ public class LocationUpdatesService extends Service{
         Utils.setRequestingLocationUpdates(this, true);
         startService(new Intent(getApplicationContext(), LocationUpdatesService.class));
         try {
-            Log.i("ERROR", "PIDIENDO PERMISOS");
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                     mLocationCallback, Looper.myLooper());
         } catch (SecurityException unlikely) {
