@@ -12,12 +12,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.zxing.WriterException;
 import com.javierd.nightlive.R;
 import com.javierd.nightlive.Utils;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.List;
+
+import androidmads.library.qrgenearator.QRGContents;
+import androidmads.library.qrgenearator.QRGEncoder;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
@@ -30,6 +34,7 @@ public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapte
         TextView infoTextView;
         TextView datesTextView;
         TextView priceTextView;
+        ImageView qrImageView;
         ExpandableLayout expandableLayout;
 
         FlyerViewHolder(View v){
@@ -39,6 +44,7 @@ public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapte
             infoTextView = (TextView) v.findViewById(R.id.infoTextView);
             datesTextView = (TextView) v.findViewById(R.id.datesTextView);
             priceTextView = (TextView) v.findViewById(R.id.priceTextView);
+            qrImageView = (ImageView) v.findViewById(R.id.qrImageView);
             expandableLayout = (ExpandableLayout) v.findViewById(R.id.expandableLayout);
         }
     }
@@ -78,6 +84,19 @@ public class FlyerPreviewAdapter extends RecyclerView.Adapter<FlyerPreviewAdapte
         viewHolder.infoTextView.setText(items.get(i).getInfo());
         viewHolder.datesTextView.setText(sDate+" - "+endDate);
 
+        System.out.println(items.get(i).getInfo());
+
+        /*Set the QR image*/
+        QRGEncoder qrgEncoder = new QRGEncoder(items.get(i).getQr(), null, QRGContents.Type.TEXT, 500);
+        try {
+            viewHolder.qrImageView.setImageBitmap(qrgEncoder.encodeAsBitmap());
+            Log.i("QR",items.get(i).getQr());
+        } catch (WriterException e) {
+            Log.i("Error","Error al mostrar el QR: "+items.get(i).getQr());
+        }
+
+
+        /*Set the currency*/
         if(items.get(i).getCurrency() != null){
             price = String.valueOf(items.get(i).getPrice()) + " " + items.get(i).getCurrency();
         }else{
