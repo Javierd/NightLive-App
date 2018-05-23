@@ -56,7 +56,7 @@ public class LocationUpdatesService extends Service{
     private final IBinder mBinder = new LocalBinder();
 
     //Used when the app is in the foreground
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 30 * 1000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 20 * 1000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
