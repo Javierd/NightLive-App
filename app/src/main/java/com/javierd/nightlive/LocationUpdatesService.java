@@ -126,6 +126,7 @@ public class LocationUpdatesService extends Service{
 
         // We got here because the user decided to remove location updates from the notification.
         if (startedFromNotification) {
+            /*TODO Start the non foreground mode. Change the buttons on main activity.*/
             removeLocationUpdates();
             stopSelf();
         }
@@ -174,7 +175,8 @@ public class LocationUpdatesService extends Service{
             Log.i(TAG, "Starting foreground service");
 
             startForeground(NOTIFICATION_ID, getNotification());
-            //changeLocationRequest(false);
+            //TODO See if its worth it
+            changeLocationRequest(false);
         }
         return true; // Ensures onRebind() is called when a client re-binds.
     }
@@ -426,6 +428,15 @@ public class LocationUpdatesService extends Service{
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the location the service has stored so that an activity does not need to
+     * wait until it sends a new location.
+     * @return Las location the service stored.
+     */
+    public Location getLocation(){
+        return this.mLocation;
     }
 }
 

@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -41,7 +42,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
@@ -60,6 +67,9 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.maps.android.SphericalUtil;
@@ -184,7 +194,38 @@ public class MainActivity extends NetworkActivity  implements
         connectGoogleApiClient();
 
         /*Check whether user has enabled the GPS on high accuracy*/
-        /*TODO*/
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(new LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY));
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                // ...
+            }
+        });
+
+        task.addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(MainActivity.this,
+                                31);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
+
         /*Load the map*/
         mMapFragment = SupportMapFragment.newInstance();
         getSupportFragmentManager()
@@ -319,7 +360,7 @@ public class MainActivity extends NetworkActivity  implements
 
         private int mWidth;
 
-        public PhotoTask(int width, int height) {
+        private PhotoTask(int width, int height) {
             mHeight = height;
             mWidth = width;
         }
@@ -362,11 +403,10 @@ public class MainActivity extends NetworkActivity  implements
          */
         class AttributedPhoto {
 
-            public final CharSequence attribution;
+            private final CharSequence attribution;
+            private final Bitmap bitmap;
 
-            public final Bitmap bitmap;
-
-            public AttributedPhoto(CharSequence attribution, Bitmap bitmap) {
+            private AttributedPhoto(CharSequence attribution, Bitmap bitmap) {
                 this.attribution = attribution;
                 this.bitmap = bitmap;
             }
@@ -442,7 +482,7 @@ public class MainActivity extends NetworkActivity  implements
 
         // In case it is already created, just update the text if necessary
         if(mPopupWindow != null){
-            TextView textView = (TextView) mPopupWindow.getContentView().findViewById(R.id.textView);
+            TextView textView = mPopupWindow.getContentView().findViewById(R.id.textView);
             if(text != textView.getText())
                 textView.setText(text);
             return;
@@ -711,7 +751,11 @@ public class MainActivity extends NetworkActivity  implements
         if (Utils.checkLocationPermissions(MainActivity.this)) {
             googleMap.setMyLocationEnabled(true);
             uiSettings.setMyLocationButtonEnabled(true);
-
+            Location location = null;
+            if(mService != null && (location = mService.getLocation()) != null ){
+                mapCentered = true;
+                moveCamera(mapLoaded, location);
+            }
         } else {
             requestPermissions();
         }
