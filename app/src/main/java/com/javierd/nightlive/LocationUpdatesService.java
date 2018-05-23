@@ -326,34 +326,18 @@ public class LocationUpdatesService extends Service{
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder mBuilder = new Notification.Builder(this, CHANNEL_ID)
-                    .setContentIntent(activityPendingIntent)
-                    .addAction(R.mipmap.ic_launcher, getString(R.string.remove_location_updates),
-                            servicePendingIntent)
-                    .setContentText(text)
-                    .setContentTitle(Utils.getLocationTitle(this))
-                    .setOngoing(true)
-                    .setSmallIcon(R.drawable.notification_icon)
-                    .setTicker(text)
-                    .setWhen(System.currentTimeMillis());
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentIntent(activityPendingIntent)
+                .addAction(R.mipmap.ic_launcher, getString(R.string.remove_location_updates),
+                        servicePendingIntent)
+                .setContentText(text)
+                .setContentTitle(Utils.getLocationTitle(this))
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setTicker(text)
+                .setWhen(System.currentTimeMillis());
 
-            return mBuilder.build();
-
-        }else{
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                    .addAction(R.mipmap.ic_launcher, getString(R.string.remove_location_updates),
-                            servicePendingIntent)
-                    .setContentText(text)
-                    .setContentTitle(Utils.getLocationTitle(this))
-                    .setOngoing(true)
-                    .setPriority(Notification.PRIORITY_MIN)
-                    .setSmallIcon(R.drawable.notification_icon)
-                    .setTicker(text)
-                    .setWhen(System.currentTimeMillis());
-
-            return mBuilder.build();
-        }
+        return mBuilder.build();
     }
 
     private void getLastLocation() {
