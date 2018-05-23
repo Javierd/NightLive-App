@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ public class GMapPlacePreviewAdapter extends RecyclerView.Adapter<GMapPlacePrevi
     private List<GMapPlace> items;
 
     static class GMapPlaceViewHolder extends  RecyclerView.ViewHolder{
+        LinearLayout layout;
         ImageView imageView;
         ProgressBar imageProgressbar;
         TextView nameTextView;
@@ -33,6 +35,7 @@ public class GMapPlacePreviewAdapter extends RecyclerView.Adapter<GMapPlacePrevi
 
         GMapPlaceViewHolder(View v){
             super(v);
+            layout = (LinearLayout) v.findViewById(R.id.mainLayout);
             imageView = (ImageView) v.findViewById(R.id.imageView);
             imageProgressbar = (ProgressBar) v.findViewById(R.id.imageProgressBar);
             nameTextView = (TextView) v.findViewById(R.id.nameTextView);
@@ -73,7 +76,7 @@ public class GMapPlacePreviewAdapter extends RecyclerView.Adapter<GMapPlacePrevi
             viewHolder.imageView.setImageBitmap(image);
         }
 
-        viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
+        viewHolder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GMapPlace place = items.get(viewHolder.getAdapterPosition());
@@ -93,6 +96,5 @@ public class GMapPlacePreviewAdapter extends RecyclerView.Adapter<GMapPlacePrevi
                 view.getContext().startActivity(i, options.toBundle());*/
             }
         });
-
     }
 }
